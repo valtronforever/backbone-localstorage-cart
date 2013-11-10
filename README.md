@@ -5,10 +5,11 @@ Shoping cart collection stored in local storage with real-time updates on all ta
 
 Has all Backbone.Collection methods and next:
 
-clear() - clear collection, for current tab emit 'clear' event;
-productCount() - get number of products;
-productTotal() - total of all products;
-
+````html
+clear() // clear collection, for current tab emit 'clear' event;
+productCount() // get number of products;
+productTotal() // total of all products;
+````
 
 'storage' event will be emited every time when local storage has changed by the other tab
 
