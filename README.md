@@ -13,7 +13,7 @@ productTotal() - total of all products;
 'storage' event will be emited every time when local storage has changed by the other tab
 
 Example:
-
+````html
 var Cart = new Backbone.CartCollection([], { 
     exdays: 7
 });
@@ -21,5 +21,5 @@ Cart.on('storage', function() {
     console.log('Data updated!');
 });
 
-
+````
 See source for details;
