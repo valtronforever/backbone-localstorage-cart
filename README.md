@@ -5,20 +5,20 @@ Shoping cart collection stored in local storage with real-time updates on all ta
 
 Has all Backbone.Collection methods and next:
 
-clear() - clear collection, call onUpdate method on all tabs including current;
+clear() - clear collection, for current tab emit 'clear' event;
 productCount() - get number of products;
 productTotal() - total of all products;
 
 
-onUpdate method will be called every time when local storage has changed by the other tab
+'storage' event will be emited every time when local storage has changed by the other tab
 
 Example:
 
 var Cart = new Backbone.CartCollection([], { 
-    exdays: 7,
-    onUpdate: function(collection) {
-        console.log('Update');
-    }
+    exdays: 7
+});
+Cart.on('storage', function() {
+    console.log('Data updated!');
 });
 
 

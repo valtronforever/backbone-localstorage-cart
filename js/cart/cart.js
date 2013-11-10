@@ -39,7 +39,7 @@
         
         cookieExists: function() {
             var that = this;
-            return (document.cookie.indexOf(that.localStorage.name + "=") !== -1) ? true : false;
+            return !!((document.cookie.indexOf(that.localStorage.name + "=") !== -1));
         },
         
         onStorage: function(e) {
@@ -55,16 +55,15 @@
                 e.key.indexOf('Cart') !== -1 &&
                 e.key !== 'Cart'
             ) {
-                var store = that.localStorage.localStorage().getItem(that.localStorage.name);
-                that.localStorage.records = (store && store.split(",")) || [];
-                that.fetch({ reset: true });
+                _.defer(function() {
+                    var store = that.localStorage.localStorage().getItem(that.localStorage.name);
+                    that.localStorage.records = (store && store.split(",")) || [];
+                    that.fetch();
+                    that.trigger('storage');
+                });
             }
         },
-        
-        onUpdate: function(collection) {
-    
-        },
-        
+
         constructor: function() {
             var that = this;
             Backbone.Collection.apply(that, arguments);
@@ -89,11 +88,7 @@
                     if (!e) { e = window.event; }
                     that.onStorage(e);
                 });
-            };
-            
-            that.on('reset', function() {
-                that.onUpdate(that);
-            });
+            }
         },
         
         clearStorage: function() {
@@ -116,6 +111,7 @@
             that.localStorage.records = [];
             
             that.reset([]);
+            that.trigger('clear');
         },
                 
         productCount: function() {

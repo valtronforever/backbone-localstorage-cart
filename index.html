@@ -14,10 +14,10 @@
         <script type="text/javascript" src="js/cart/cart.js"></script>
         <script>
             var Cart = new Backbone.CartCollection([], { 
-                exdays: 7,
-                onUpdate: function(collection) {
-                    console.log('Update');
-                }
+                exdays: 7
+            });
+            Cart.on('storage', function() {
+                console.log('Data updated!');
             });
         </script>
     </head>
