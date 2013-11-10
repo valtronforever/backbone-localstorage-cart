@@ -1,4 +1,12 @@
-;(function(window) {
+;(function(window, document, Backbone) {
+    
+    if (typeof Backbone === 'undefined') {
+        throw('Backbone not included');
+    }
+    
+    var fpFix = function (n) {
+        return Math.round(n * 100)/100;
+    };
     
     var ProductModel = Backbone.Model.extend({
         
@@ -15,6 +23,24 @@
         
         localStorage: new Backbone.LocalStorage("Cart"),
         model: ProductModel,
+        
+        setCookie: function() {
+            var that = this;
+            var exdays = that.options.exdays;
+            if (typeof exdays === 'undefined') {
+                exdays = 7;
+            }
+
+            var exdate=new Date();
+            exdate.setDate(exdate.getDate() + exdays);
+            var c_value = "1; expires=" + exdate.toUTCString();
+            document.cookie=that.localStorage.name + "=" + c_value;
+        },
+        
+        cookieExists: function() {
+            var that = this;
+            return (document.cookie.indexOf(that.localStorage.name + "=") !== -1) ? true : false;
+        },
         
         onStorage: function(e) {
             var that = this;
@@ -40,12 +66,19 @@
         },
         
         constructor: function() {
-            Backbone.Collection.apply(this, arguments);
-            this.fetch();
+            var that = this;
+            Backbone.Collection.apply(that, arguments);
+            
+            if (!that.cookieExists()) {
+                that.clearStorage();
+            }
+            that.setCookie();
+            that.fetch();
         },
         
-        initialize: function() {
+        initialize: function(models, options) {
             var that = this;
+            that.options = options;
             if (window.addEventListener) {
                 window.addEventListener("storage", function(e) {
                     if (!e) { e = window.event; }
@@ -62,21 +95,53 @@
                 that.onUpdate();
             });
         },
-                
-        clear: function() {
+        
+        clearStorage: function() {
             var that = this;
             var storage = that.localStorage.localStorage();
-            
-            _.each(that.localStorage.records, function(id) {
+            var store = storage.getItem(that.localStorage.name);
+            var records = (store && store.split(",")) || [];
+
+            _.each(records, function(id) {
                 storage.removeItem(that.localStorage.name + '-' + id);
             });
             
             storage.setItem(that.localStorage.name, '');
+        },
+        
+        clear: function() {
+            var that = this;
+
+            that.clearStorage();
             that.localStorage.records = [];
             
             that.reset([]);
+        },
+                
+        productCount: function() {
+            var that = this;
+            var count = 0;
+            if (that.length !== 0) {
+                count = that.reduce(function(memo, model) {
+                    return memo + model.get('count');
+                }, 0);
+            }
+            
+            return count;
+        },
+                
+        productTotal: function() {
+            var that = this;
+            var total = 0;
+            if (that.length !== 0) {
+                total = that.reduce(function(memo, model) {
+                    return fpFix(memo + fpFix(model.get('count') * model.get('price')));
+                }, 0);
+            }
+            
+            return total;
         }
         
     });
     
-})(window);
+})(window, document, Backbone);
