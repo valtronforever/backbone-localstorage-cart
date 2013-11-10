@@ -13,7 +13,12 @@
         <!-- Cart App -->
         <script type="text/javascript" src="js/cart/cart.js"></script>
         <script>
-            var Cart = new Backbone.CartCollection([], { exdays: 7 });
+            var Cart = new Backbone.CartCollection([], { 
+                exdays: 7,
+                onUpdate: function(collection) {
+                    console.log('Update');
+                }
+            });
         </script>
     </head>
     <body>

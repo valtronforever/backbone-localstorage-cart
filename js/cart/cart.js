@@ -61,7 +61,7 @@
             }
         },
         
-        onUpdate: function() {
+        onUpdate: function(collection) {
     
         },
         
@@ -92,7 +92,7 @@
             };
             
             that.on('reset', function() {
-                that.onUpdate();
+                that.onUpdate(that);
             });
         },
         
